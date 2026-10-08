@@ -2,7 +2,7 @@
 set -u
 
 TOOL_VERSION="3.1.0"
-REPO_RAW="https://raw.githubusercontent.com/srctmh/dpt/main"
+REPO_RAW="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/install.sh?token=GHSAT0AAAAAAELS76TETJ4KJXDNZ7ENUBRW2WHFAVA"
 ENGINE_API="https://api.github.com/repos/luoyesiqiu/dpt-shell/releases/latest"
 BASE="${HOME}/.srctmh-dpt"
 TMP="${BASE}/tmp_install"
