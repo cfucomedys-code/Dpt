@@ -1,3 +1,4 @@
+cat > $PREFIX/bin/dpt << 'ENDOFDPT'
 #!/data/data/com.termux/files/usr/bin/bash
 set -u
 
@@ -51,7 +52,7 @@ on_interrupt(){
   echo; echo
   box_top
   box_line "${YELLOW}Exiting safely${RESET}"
-  box_line "Thanks · ${BOLD}${MAGENTA}@ABHI BHAI${RESET}"
+  box_line "Thanks · ${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
   box_bot
   echo
   exit 130
@@ -103,6 +104,8 @@ show_protect_progress(){
   clear_screen
   box_top
   box_line "${BOLD}${CYAN}PROTECTING${RESET}"
+  box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_mid
   box_line "${s1} File verified"
   box_line "${s2} Workspace ready"
@@ -118,6 +121,8 @@ main_menu(){
     local choice
     box_top
     box_line "${BOLD}${CYAN}⚡ SRC TMH DPT${RESET}"
+    box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+    box_line "${BOLD}${YELLOW}ADMIN${RESET}"
     box_line "Plan     ${GREEN}${BOLD}Unlimited${RESET}"
     box_bot
     echo
@@ -131,7 +136,8 @@ main_menu(){
         clear_screen
         box_top
         box_line "${CYAN}Thanks for using SRC TMH DPT${RESET}"
-        box_line "Developed by ${BOLD}${MAGENTA}@ABHI BHAI${RESET}"
+        box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+        box_line "${BOLD}${YELLOW}ADMIN${RESET}"
         box_bot
         echo
         exit 0
@@ -146,6 +152,8 @@ protect_flow(){
   clear_screen
   box_top
   box_line "${BOLD}${CYAN}PROTECT APK / AAB${RESET}"
+  box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_line "${DIM}Enter file path below${RESET}"
   box_bot
   echo
@@ -168,6 +176,8 @@ protect_flow(){
   clear_screen
   box_top
   box_line "${BOLD}${CYAN}SELECT PROTECTION${RESET}"
+  box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_mid
   box_line "${GREEN}[1]${RESET} Normal Protection"
   box_line "${MAGENTA}[2]${RESET} Signature Verification"
@@ -222,8 +232,13 @@ protect_flow(){
     reason=$(tail -n 5 "$log_out" 2>/dev/null | tr '\n' ' ' | sed -E 's/[[:space:]]+/ /g' | cut -c1-34)
     [ -z "$reason" ] && reason="Unknown error"
     clear_screen
-    box_top; box_line "${RED}${BOLD}✗ PROTECTION FAILED${RESET}"; box_mid
-    box_line "Reason: $reason"; box_bot
+    box_top
+    box_line "${RED}${BOLD}✗ PROTECTION FAILED${RESET}"
+    box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+    box_line "${BOLD}${YELLOW}ADMIN${RESET}"
+    box_mid
+    box_line "Reason: $reason"
+    box_bot
     rm -rf "$work_dir"; pause; return
   fi
   show_protect_progress 5; sleep 0.25
@@ -231,12 +246,20 @@ protect_flow(){
   local produced final_path
   produced=$(find "$work_dir" -type f \( -name "*_signed.apk" -o -name "*.apk" -o -name "*.aab" \) ! -name "*_unsign*" -print 2>/dev/null | head -n1)
   if [ -z "$produced" ]; then
-    clear_screen; box_top; box_line "${RED}No output file found${RESET}"; box_bot
+    clear_screen
+    box_top
+    box_line "${RED}No output file found${RESET}"
+    box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+    box_bot
     rm -rf "$work_dir"; pause; return
   fi
   final_path=$(unique_output_name "$out_root" "$apk_base" "$apk_ext")
   if ! mv "$produced" "$final_path"; then
-    clear_screen; box_top; box_line "${RED}Could not save output${RESET}"; box_bot
+    clear_screen
+    box_top
+    box_line "${RED}Could not save output${RESET}"
+    box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+    box_bot
     rm -rf "$work_dir"; pause; return
   fi
   rm -rf "$work_dir"
@@ -244,6 +267,8 @@ protect_flow(){
   clear_screen
   box_top
   box_line "${GREEN}${BOLD}✓ PROTECTION COMPLETE${RESET}"
+  box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_mid
   box_line "${WHITE}${apk_name}${RESET} · ${CYAN}${ptype_label}${RESET}"
   box_line "Saved to:"
@@ -254,3 +279,5 @@ protect_flow(){
 
 require_config
 main_menu
+ENDOFDPT
+chmod +x $PREFIX/bin/dpt
