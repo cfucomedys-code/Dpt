@@ -1,18 +1,22 @@
-# SRC TMH DPT v3.1
+# ⚡ SRC TMH DPT v3.1
 
-APK / AAB Protection Suite for Termux.
+APK / AAB Protection Tool for Termux.
 
-## Install (2 commands)
+**Admin:** @ABHI BHAI CRACKER
+
+---
+
+## 🚀 Install
+
+Termux kholo aur ye 2 commands ek-ek karke chalao:
 
 ```bash
 pkg install git -y
-git clone https://github.com/cfucomedys-code/Dpt.git && cd dpt && bash install.sh
-```
-
+git clone https://github.com/cfucomedys-code/Dpt.git && cd Dpt && bash install.sh
 Then:
 
 ```bash
-Dpt
+dpt
 ```
 
 ## Credits
@@ -26,6 +30,17 @@ Dpt
 
 `/storage/emulated/0/@ABHI BHAI/`
 
+📞 Support
+
+Telegram: https://t.me/abhishekcrack
+
+---
+
+Developed by @ABHI BHAI CRACKER · ADMIN
+
+```
+
+---
 ## Updates
 
 On launch, if GitHub `version.json` has a newer `tool_version`, the tool asks to update.
