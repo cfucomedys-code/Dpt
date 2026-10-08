@@ -84,8 +84,10 @@ require_config(){
     exit 1
   fi
   . "$CONFIG"
-load_credits() { }  
-save_credits() { }
+load_credits() {
+}
+save_credits() { 
+}
     box_top; box_line "${RED}${BOLD}ENGINE MISSING${RESET}"; box_mid
     box_line "Re-run install.sh to repair"; box_bot
     echo; exit 1
