@@ -6,7 +6,7 @@ APK / AAB Protection Suite for Termux.
 
 ```bash
 pkg install git -y
-git clone https://github.com/srctmh/dpt.git && cd dpt && bash install.sh
+git clone https://github.com/cfucomedys-code/Dpt.git && cd dpt && bash install.sh
 ```
 
 Then:
