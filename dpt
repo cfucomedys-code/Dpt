@@ -6,7 +6,6 @@ TMP_BASE="${BASE}/tmp"
 OUTPUT_FOLDER="@ABHI BHAI"
 TOOL_VERSION="3.1.0"
 KILL_SWITCH_URL="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/version.json?token=GHSAT0AAAAAAELS76TEKQSYB3SDMPZKFA2A2WHDUHQ"
-ENGINE_API="https://api.github.com/repos/luoyesiqiu/dpt-shell/releases/latest"
 REPO_RAW="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/install.sh?token=GHSAT0AAAAAAELS76TETJ4KJXDNZ7ENUBRW2WHFAVA"
 
 if [ -t 1 ]; then
@@ -125,7 +124,6 @@ check_kill_and_update(){
     box_mid
     box_line "Installed : ${TOOL_VERSION}"
     box_line "Latest    : ${remote}"
-    box_line "Repo update mil chuka hai"
     box_bot
     echo
     printf " %s[1]%s Update now   %s[0]%s Later\n" "$GREEN" "$RESET" "$CYAN" "$RESET"
@@ -144,23 +142,15 @@ apply_self_update(){
   box_top; box_line "${CYAN}${BOLD}UPDATING${RESET}"; box_mid
   box_line "Downloading latest files..."; box_bot
   echo
-  local tmpd newd newi
+  local tmpd newd
   tmpd=$(mktemp -d 2>/dev/null || echo "${TMP_BASE}/upd$$")
   mkdir -p "$tmpd"
-  newd="${tmpd}/dpt"; newi="${tmpd}/install.sh"
+  newd="${tmpd}/dpt"
   if curl -fL --retry 3 --connect-timeout 15 "${REPO_RAW}/dpt" -o "$newd" 2>/dev/null && [ -s "$newd" ]; then
-    if grep -q "subprocess.call" "$newd" 2>/dev/null && head -n 8 "$newd" | grep -q "python3"; then
-      box_top; box_line "${RED}Update file invalid${RESET}"; box_bot; rm -rf "$tmpd"; pause; return
-    fi
     chmod 755 "$newd"
     mkdir -p "${PREFIX}/bin"
     cp "$newd" "${PREFIX}/bin/dpt"
     chmod 755 "${PREFIX}/bin/dpt"
-  fi
-  if curl -fL --retry 3 --connect-timeout 15 "${REPO_RAW}/install.sh" -o "$newi" 2>/dev/null && [ -s "$newi" ]; then
-    printf "  %s[i]%s Latest installer downloaded.\n" "$CYAN" "$RESET"
-    printf "  Re-run if engine also needs refresh:\n"
-    printf "  %sbash install.sh%s\n" "$BOLD" "$RESET"
   fi
   rm -rf "$tmpd"
   echo
@@ -211,46 +201,31 @@ main_menu(){
     box_top
     box_line "${BOLD}${CYAN}⚡ SRC TMH DPT${RESET}"
     box_line "Plan     ${GREEN}${BOLD}Unlimited${RESET}"
-    box_line "Status   ${GREEN}Active${RESET}"
     box_bot
     echo
-    printf " %s[1]%s Protect   %s[2]%s About     %s[3]%s %sExit%s\n" \
-      "$CYAN" "$RESET" "$CYAN" "$RESET" "$CYAN" "$RESET" "$RED" "$RESET"
+    printf " %s[1]%s Protect   %s[2]%s Exit\n" \
+      "$CYAN" "$RESET" "$RED" "$RESET"
     echo
     choice=$(read_input " ${BOLD}Select:${RESET} ")
     choice=$(printf '%s' "$choice" | tr -d '[:space:]')
     case "$choice" in
       1) protect_flow ;;
-      2) about_screen ;;
-      3)
+      2)
         clear_screen
         box_top
         box_line "${CYAN}Thanks for using SRC TMH DPT${RESET}"
-        box_line "Developed by ${BOLD}${MAGENTA}@SRCTMH${RESET}"
+        box_line "Developed by ${BOLD}${MAGENTA}@ABHI BHAI${RESET}"
         box_bot
         echo
         exit 0
         ;;
       "") ;;
       *)
-        printf "  %sInvalid option — choose 1-3%s\n" "$YELLOW" "$RESET" >&2
+        printf "  %sInvalid option — choose 1-2%s\n" "$YELLOW" "$RESET" >&2
         sleep 1
         ;;
     esac
   done
-}
-
-about_screen(){
-  clear_screen
-  box_top
-  box_line "${BOLD}${CYAN}ABOUT${RESET}"
-  box_mid
-  box_line "SRC TMH DPT v${TOOL_VERSION}"
-  box_line "APK/AAB Protection Tool"
-  box_line "Powered by dpt-shell"
-  box_line "Dev: ${MAGENTA}@ABHI BHAI${RESET}"
-  box_bot
-  pause
 }
 
 protect_flow(){
@@ -284,19 +259,18 @@ protect_flow(){
   box_line "${MAGENTA}[2]${RESET} Signature Verification"
   box_bot
   echo
-  local ptype_choice mode ptype_label
+  local ptype_choice ptype_label
   ptype_choice=$(read_input " ${BOLD}Select:${RESET} ")
   ptype_choice=$(printf '%s' "$ptype_choice" | tr -d '[:space:]')
   local extra_flags=()
-  mode="normal"; ptype_label="Normal"
+  ptype_label="Normal"
   case "$ptype_choice" in
-    2) mode="signature"; extra_flags+=("-vs"); ptype_label="Signature" ;;
-    *) mode="normal"; ptype_label="Normal" ;;
+    2) extra_flags+=("-vs"); ptype_label="Signature" ;;
   esac
 
   local out_root="${STORAGE_ROOT:-/storage/emulated/0}/${OUTPUT_FOLDER}"
   if ! mkdir -p "$out_root" 2>/dev/null; then
-    clear_screen; box_top; box_line "${RED}Cannot create @SRCTMH folder${RESET}"; box_bot; pause; return
+    clear_screen; box_top; box_line "${RED}Cannot create output folder${RESET}"; box_bot; pause; return
   fi
 
   local apk_name apk_base apk_ext work_dir log_out
