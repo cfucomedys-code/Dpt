@@ -12,7 +12,7 @@ git clone https://github.com/cfucomedys-code/Dpt.git && cd dpt && bash install.s
 Then:
 
 ```bash
-dpt
+Dpt
 ```
 
 ## Credits
