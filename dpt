@@ -2,11 +2,10 @@
 set -u
 
 BASE="${HOME}/.srctmh-dpt"
+CONFIG="${BASE}/config"
 TMP_BASE="${BASE}/tmp"
 OUTPUT_FOLDER="@ABHI BHAI"
 TOOL_VERSION="3.1.0"
-KILL_SWITCH_URL="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/version.json?token=GHSAT0AAAAAAELS76TEKQSYB3SDMPZKFA2A2WHDUHQ"
-REPO_RAW="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/install.sh?token=GHSAT0AAAAAAELS76TETJ4KJXDNZ7ENUBRW2WHFAVA"
 
 if [ -t 1 ]; then
   BOLD=$'\033[1m'; RESET=$'\033[0m'
@@ -33,31 +32,19 @@ box_line(){
 clear_screen(){ clear 2>/dev/null || true; }
 
 read_input(){
-  local prompt="${1:- > }"
-  local value=""
+  local prompt="${1:- > }" value=""
   printf "%s" "$prompt" >&2
   if [ -r /dev/tty ]; then
-    if read -r value </dev/tty; then
-      printf '%s' "$value"
-      return 0
-    fi
+    if read -r value </dev/tty; then printf '%s' "$value"; return 0; fi
   fi
-  if read -r value; then
-    printf '%s' "$value"
-    return 0
-  fi
-  printf ''
-  return 1
+  if read -r value; then printf '%s' "$value"; return 0; fi
+  printf ''; return 1
 }
 
 pause(){
   echo
   printf " %sPress %sEnter%s%s...%s " "$DIM" "$BOLD" "$RESET" "$DIM" "$RESET" >&2
-  if [ -r /dev/tty ]; then
-    read -r _ </dev/tty || true
-  else
-    read -r _ || true
-  fi
+  if [ -r /dev/tty ]; then read -r _ </dev/tty || true; else read -r _ || true; fi
 }
 
 on_interrupt(){
@@ -77,87 +64,18 @@ require_config(){
     box_top; box_line "${RED}${BOLD}NOT INSTALLED${RESET}"; box_mid
     box_line "Run installer first"; box_bot
     echo
-    printf "  pkg install git -y\n"
-    printf "  git clone https://github.com/srctmh/dpt.git && cd dpt && bash install.sh\n\n"
+    printf "  cd %s/Dpt && bash install.sh\n\n" "$HOME"
     exit 1
   fi
   . "$CONFIG"
   if [ -z "${DPT_JAR:-}" ] || [ ! -f "${DPT_JAR}" ]; then
-    clear_screen
-    box_top; box_line "${RED}${BOLD}ENGINE MISSING${RESET}"; box_mid
-    box_line "Re-run install.sh to repair"; box_bot
-    echo; exit 1
+    clear_screen; box_top; box_line "${RED}${BOLD}ENGINE MISSING${RESET}"; box_mid
+    box_line "Re-run install.sh to repair"; box_bot; echo; exit 1
   fi
   if [ -z "${DPT_RUNTIME:-}" ] || [ ! -d "${DPT_RUNTIME}" ]; then
-    clear_screen
-    box_top; box_line "${RED}${BOLD}ENGINE RUNTIME MISSING${RESET}"; box_mid
-    box_line "Re-run install.sh to repair"; box_bot
-    echo; exit 1
+    clear_screen; box_top; box_line "${RED}${BOLD}RUNTIME MISSING${RESET}"; box_mid
+    box_line "Re-run install.sh to repair"; box_bot; echo; exit 1
   fi
-}
-
-ver_gt(){
-  local a="$1" b="$2"
-  [ "$a" = "$b" ] && return 1
-  printf '%s\n%s\n' "$a" "$b" | sort -V | tail -n1 | grep -qx "$a"
-}
-
-check_kill_and_update(){
-  local json status msg remote force
-  json=$(curl -fsS --connect-timeout 5 --max-time 8 "$KILL_SWITCH_URL" 2>/dev/null || true)
-  [ -z "$json" ] && return 0
-  status=$(printf '%s' "$json" | grep -oE '"status"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"status"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')
-  if [ "$status" = "disabled" ]; then
-    msg=$(printf '%s' "$json" | grep -oE '"message"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"message"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')
-    clear_screen
-    box_top; box_line "${RED}${BOLD}SERVICE UNAVAILABLE${RESET}"; box_mid
-    box_line "${msg:-Temporarily disabled}"
-    box_line "Contact ${MAGENTA}@ABHI BHAI${RESET}"
-    box_bot; echo; exit 1
-  fi
-  remote=$(printf '%s' "$json" | grep -oE '"tool_version"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed -E 's/.*"tool_version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/')
-  force=$(printf '%s' "$json" | grep -oE '"force_update"[[:space:]]*:[[:space:]]*[^,}]+' | head -1 | sed -E 's/.*:[[:space:]]*//' | tr -d ' "')
-  if [ -n "$remote" ] && ver_gt "$remote" "$TOOL_VERSION"; then
-    clear_screen
-    box_top
-    box_line "${YELLOW}${BOLD}UPDATE AVAILABLE${RESET}"
-    box_mid
-    box_line "Installed : ${TOOL_VERSION}"
-    box_line "Latest    : ${remote}"
-    box_bot
-    echo
-    printf " %s[1]%s Update now   %s[0]%s Later\n" "$GREEN" "$RESET" "$CYAN" "$RESET"
-    echo
-    local c
-    c=$(read_input " ${BOLD}Select:${RESET} ")
-    c=$(printf '%s' "$c" | tr -d '[:space:]')
-    if [ "$c" = "1" ] || [ "$force" = "true" ]; then
-      apply_self_update
-    fi
-  fi
-}
-
-apply_self_update(){
-  clear_screen
-  box_top; box_line "${CYAN}${BOLD}UPDATING${RESET}"; box_mid
-  box_line "Downloading latest files..."; box_bot
-  echo
-  local tmpd newd
-  tmpd=$(mktemp -d 2>/dev/null || echo "${TMP_BASE}/upd$$")
-  mkdir -p "$tmpd"
-  newd="${tmpd}/dpt"
-  if curl -fL --retry 3 --connect-timeout 15 "${REPO_RAW}/dpt" -o "$newd" 2>/dev/null && [ -s "$newd" ]; then
-    chmod 755 "$newd"
-    mkdir -p "${PREFIX}/bin"
-    cp "$newd" "${PREFIX}/bin/dpt"
-    chmod 755 "${PREFIX}/bin/dpt"
-  fi
-  rm -rf "$tmpd"
-  echo
-  box_top; box_line "${GREEN}UPDATE APPLIED${RESET}"; box_mid
-  box_line "Restart tool: type dpt"; box_bot
-  echo
-  exit 0
 }
 
 unique_output_name(){
@@ -203,8 +121,7 @@ main_menu(){
     box_line "Plan     ${GREEN}${BOLD}Unlimited${RESET}"
     box_bot
     echo
-    printf " %s[1]%s Protect   %s[2]%s Exit\n" \
-      "$CYAN" "$RESET" "$RED" "$RESET"
+    printf " %s[1]%s Protect   %s[2]%s Exit\n" "$CYAN" "$RESET" "$RED" "$RESET"
     echo
     choice=$(read_input " ${BOLD}Select:${RESET} ")
     choice=$(printf '%s' "$choice" | tr -d '[:space:]')
@@ -220,10 +137,7 @@ main_menu(){
         exit 0
         ;;
       "") ;;
-      *)
-        printf "  %sInvalid option — choose 1-2%s\n" "$YELLOW" "$RESET" >&2
-        sleep 1
-        ;;
+      *) printf "  %sInvalid option — choose 1-2%s\n" "$YELLOW" "$RESET" >&2; sleep 1 ;;
     esac
   done
 }
@@ -259,10 +173,9 @@ protect_flow(){
   box_line "${MAGENTA}[2]${RESET} Signature Verification"
   box_bot
   echo
-  local ptype_choice ptype_label
+  local ptype_choice ptype_label extra_flags=()
   ptype_choice=$(read_input " ${BOLD}Select:${RESET} ")
   ptype_choice=$(printf '%s' "$ptype_choice" | tr -d '[:space:]')
-  local extra_flags=()
   ptype_label="Normal"
   case "$ptype_choice" in
     2) extra_flags+=("-vs"); ptype_label="Signature" ;;
@@ -273,7 +186,7 @@ protect_flow(){
     clear_screen; box_top; box_line "${RED}Cannot create output folder${RESET}"; box_bot; pause; return
   fi
 
-  local apk_name apk_base apk_ext work_dir log_out
+  local apk_name apk_ext apk_base work_dir log_out
   apk_name=$(basename "$apk_path")
   apk_ext="${apk_name##*.}"
   apk_base="${apk_name%.*}"
@@ -339,7 +252,5 @@ protect_flow(){
   pause
 }
 
-# Main entry
 require_config
-check_kill_and_update
 main_menu
