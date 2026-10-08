@@ -369,7 +369,7 @@ main_menu(){
     local days plan_line cred_line choice
     days=$(days_until_reset)
     if [ "$VIP_CREDITS" -gt 0 ]; then
-      plan_line="Plan     ${MAGENTA}${BOLD}Premium Access${RESET}"
+      plan_line="Plan     ABHI BHAI CRACKER 👑"
       cred_line="Credits  ${GREEN}${FREE_CREDITS}${RESET} Free + ${MAGENTA}${VIP_CREDITS}${RESET} VIP"
     else
       plan_line="Plan     ${DIM}Free${RESET}"
@@ -377,16 +377,16 @@ main_menu(){
     fi
     box_top
     box_line "${BOLD}${CYAN}⚡ SRC TMH DPT${RESET}"
-    box_line "$plan_line"
-    box_line "$cred_line"
+    box_line "UNLIMITED"
+    box_line "NO CREDIT"p
     box_line "Reset    ${YELLOW}${days}${RESET} days left"
     box_bot
     echo
-    if [ "$VIP_CREDITS" -gt 0 ]; then
-      printf " %s[1]%s Protect   %s[2]%s History   %s[3]%s %sVIP Key%s\n" \
+    ["CRACK BY ABHI BHAI"]
+      printf " %s[1]%s Protect   %s[2]%s History   %s
         "$CYAN" "$RESET" "$CYAN" "$RESET" "$CYAN" "$RESET" "$MAGENTA" "$RESET"
     else
-      printf " %s[1]%s Protect   %s[2]%s History   %s[3]%s %sGet VIP%s\n" \
+      printf " %s[1]%s Protect   %s[2]%s History   %s\n" \
         "$CYAN" "$RESET" "$CYAN" "$RESET" "$CYAN" "$RESET" "$MAGENTA" "$RESET"
     fi
     printf " %s[4]%s Updates   %s[5]%s About     %s[6]%s %sExit%s\n" \
@@ -397,7 +397,7 @@ main_menu(){
     case "$choice" in
       1) protect_flow ;;
       2) history_screen ;;
-      3) vip_screen ;;
+      3)  ;;
       4) update_screen ;;
       5) about_screen ;;
       6)
