@@ -13,14 +13,14 @@ Termux kholo aur ye 2 commands ek-ek karke chalao:
 ```bash
 pkg install git -y
 git clone https://github.com/cfucomedys-code/Dpt.git && cd Dpt && bash install.sh
-Then:
 
+```
 ⏩ RUN
 Install ke baad ye likho:
 
-````bash
 dpt
 
+```
 ## Credits
 
 - Normal protection:
@@ -28,6 +28,7 @@ dpt
 - unlimited free used
 - 🔥
 
+```
 ## Output
 
 `/storage/emulated/0/@ABHI BHAI/`
