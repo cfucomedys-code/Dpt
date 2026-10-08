@@ -15,14 +15,11 @@ pkg install git -y
 git clone https://github.com/cfucomedys-code/Dpt.git && cd Dpt && bash install.sh
 Then:
 
-
-▶️ Run
-
+⏩ RUN
 Install ke baad ye likho:
 
-```bash
+````bash
 dpt
-```
 
 ## Credits
 
