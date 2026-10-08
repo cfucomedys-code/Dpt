@@ -40,7 +40,6 @@ Telegram: https://t.me/abhishekcrack
 
 Developed by @ABHI BHAI CRACKER · ADMIN
 
-```
 
 ---
 ## Updates
