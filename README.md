@@ -17,10 +17,10 @@ Dpt
 
 ## Credits
 
-- Normal protection: 1 credit
-- Signature verification: 3 Free or 1 VIP credit
-- Free: 3 credits / 7 days
-- VIP credits: permanent (activation key)
+- Normal protection:
+- crack by ABHI BHAI ❤️‍🔥
+- unlimited free used
+- 🔥
 
 ## Output
 
