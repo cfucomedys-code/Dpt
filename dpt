@@ -2,11 +2,6 @@
 set -u
 
 BASE="${HOME}/.srctmh-dpt"
-CONFIG="${BASE}/config"
-CREDITS_FILE="${BASE}/credits.dat"
-HISTORY_FILE="${BASE}/history.log"
-ACTIVATED_FILE="${BASE}/activated.keys"
-TMP_BASE="${BASE}/tmp"
 OUTPUT_FOLDER="@ABHI BHAI"
 TOOL_VERSION="3.1.0"
 KILL_SWITCH_URL="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/version.json?token=GHSAT0AAAAAAELS76TEKQSYB3SDMPZKFA2A2WHDUHQ"
@@ -89,8 +84,8 @@ require_config(){
     exit 1
   fi
   . "$CONFIG"
-  if [ -z "${DPT_JAR:-}" ] || [ ! -f "${DPT_JAR}" ]; then
-    clear_screen
+load_credits() { }  
+save_credits() { }
     box_top; box_line "${RED}${BOLD}ENGINE MISSING${RESET}"; box_mid
     box_line "Re-run install.sh to repair"; box_bot
     echo; exit 1
@@ -115,45 +110,6 @@ get_device_id(){
   [ -z "$hex" ] && hex=$(printf '%s' "$raw" | cksum | awk '{print $1}' | head -c 12)
   printf 'SRCTMH-%s\n' "$hex"
 }
-
-init_credits(){
-  mkdir -p "$BASE"
-  if [ ! -f "$CREDITS_FILE" ]; then
-    cat > "$CREDITS_FILE" <<EOF
-device_id=$(get_device_id)
-curl -X POST -d "id=$device_id" https://abhi-bhai-fa85a-default-rtdb.firebaseio.com/users.json
-free_credits=3
-vip_credits=0
-last_reset=$(date +%s)
-EOF
-  fi
-}
-save_credits(){
-  cat > "$CREDITS_FILE" <<EOF
-device_id=${DEVICE_ID}
-free_credits=${FREE_CREDITS}
-vip_credits=${VIP_CREDITS}
-last_reset=${LAST_RESET}
-EOF
-}
-load_credits(){
-  init_credits
-  . "$CREDITS_FILE"
-  DEVICE_ID="${device_id:-$(get_device_id)}"
-  FREE_CREDITS="${free_credits:-3}"
-  VIP_CREDITS="${vip_credits:-0}"
-  LAST_RESET="${last_reset:-$(date +%s)}"
-  case "$FREE_CREDITS" in (*[!0-9]*|"") FREE_CREDITS=0 ;; esac
-  case "$VIP_CREDITS" in (*[!0-9]*|"") VIP_CREDITS=0 ;; esac
-  case "$LAST_RESET" in (*[!0-9]*|"") LAST_RESET=$(date +%s) ;; esac
-  local now diff; now=$(date +%s); diff=$((now-LAST_RESET))
-  if [ "$diff" -ge 604800 ]; then FREE_CREDITS=3; LAST_RESET=$now; save_credits; fi
-}
-total_credits(){ echo $((FREE_CREDITS + VIP_CREDITS)); }
-days_until_reset(){
-  local now diff left; now=$(date +%s); diff=$((now-LAST_RESET)); left=$((604800-diff))
-  [ "$left" -le 0 ] && { echo 0; return; }
-  echo $((left/86400+1))
 }
 can_afford(){
   local mode="$1"
@@ -510,13 +466,6 @@ protect_flow(){
     2) mode="signature"; extra_flags+=("-vs"); ptype_label="Signature" ;;
     *) mode="normal"; ptype_label="Normal" ;;
   esac
-  if ! can_afford "$mode"; then
-    clear_screen
-    box_top; box_line "${YELLOW}Not enough credits${RESET}"
-    if [ "$mode" = "signature" ]; then box_line "Need 3 Free or 1 VIP credit"
-    else box_line "Need at least 1 credit"; fi
-    box_bot; pause; return
-  fi
 
   local out_root="${STORAGE_ROOT:-/storage/emulated/0}/${OUTPUT_FOLDER}"
   if ! mkdir -p "$out_root" 2>/dev/null; then
