@@ -2,20 +2,22 @@
 set -u
 
 TOOL_VERSION="3.1.0"
-REPO_RAW="https://raw.githubusercontent.com/cfucomedys-code/Dpt/refs/heads/main/install.sh?token=GHSAT0AAAAAAELS76TETJ4KJXDNZ7ENUBRW2WHFAVA"
+REPO_RAW="https://raw.githubusercontent.com/cfucomedys-code/Dpt/main"
 ENGINE_API="https://api.github.com/repos/luoyesiqiu/dpt-shell/releases/latest"
 BASE="${HOME}/.srctmh-dpt"
 TMP="${BASE}/tmp_install"
 CONFIG="${BASE}/config"
 RUNTIME="${BASE}/runtime"
 MIN_SPACE_KB=204800
+TELEGRAM_LINK="https://t.me/abhishekcrack"
 
 if [ -t 1 ]; then
   BOLD=$'\033[1m'; RESET=$'\033[0m'
   GREEN=$'\033[32m'; RED=$'\033[31m'
   CYAN=$'\033[36m'; YELLOW=$'\033[33m'; DIM=$'\033[2m'
+  MAGENTA=$'\033[35m'
 else
-  BOLD=""; RESET=""; GREEN=""; RED=""; CYAN=""; YELLOW=""; DIM=""
+  BOLD=""; RESET=""; GREEN=""; RED=""; CYAN=""; YELLOW=""; DIM=""; MAGENTA=""
 fi
 
 BW=36
@@ -37,7 +39,9 @@ warn(){ printf "  %s[!]%s %s\n" "$YELLOW" "$RESET" "$1"; }
 die(){
   echo
   box_top; box_line "${RED}${BOLD}INSTALL FAILED${RESET}"; box_mid; box_line "$1"; box_bot
-  echo; printf "  Help: %s@ABHI BHAI%s on Telegram\n\n" "$BOLD" "$RESET"
+  echo
+  printf "  Help: %s@ABHI BHAI CRACKER%s\n" "$BOLD" "$RESET"
+  printf "  %s%s%s\n\n" "$CYAN" "$TELEGRAM_LINK" "$RESET"
   rm -rf "$TMP" 2>/dev/null || true
   exit 1
 }
@@ -56,7 +60,8 @@ ensure_pkg(){
 clear 2>/dev/null || true
 box_top
 box_line "${BOLD}${CYAN}SRC TMH DPT INSTALLER${RESET}"
-box_line "Fully Automatic Setup"
+box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+box_line "${BOLD}${YELLOW}ADMIN${RESET}"
 box_line "Version ${TOOL_VERSION}"
 box_bot
 echo
@@ -104,8 +109,6 @@ pkg update -y >/dev/null 2>&1 || true
 ensure_pkg curl curl || die "Could not install curl"
 ensure_pkg unzip unzip || die "Could not install unzip"
 need_cmd wget || pkg install -y wget >/dev/null 2>&1 || true
-need_cmd python3 || need_cmd python || pkg install -y python >/dev/null 2>&1 || true
-need_cmd termux-clipboard-set || pkg install -y termux-api >/dev/null 2>&1 || true
 
 if ! need_cmd java; then
   info "Installing Java..."
@@ -191,6 +194,8 @@ cleanup
 echo
 box_top
 box_line "${GREEN}${BOLD}INSTALLATION COMPLETE${RESET}"
+box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
+box_line "${BOLD}${YELLOW}ADMIN${RESET}"
 box_mid
 box_line "Version  : ${TOOL_VERSION}"
 box_line "Engine   : ${TAG:-unknown}"
@@ -198,4 +203,4 @@ box_line "Command  : dpt"
 box_bot
 echo
 printf "  Type %s%sdpt%s to launch.\n\n" "$BOLD" "$CYAN" "$RESET"
-printf "  Developed by %s@ABHI BHAI%s · Telegram @Abhishek_kumar_6\n\n" "$BOLD" "$RESET"
+printf "  Telegram: %s%s%s\n\n" "$CYAN" "$TELEGRAM_LINK" "$RESET"
