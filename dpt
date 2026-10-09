@@ -262,11 +262,14 @@ protect_flow(){
   box_top
   box_line "${BOLD}${CYAN}PROTECT APK / AAB${RESET}"
   box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
-  box_line "Credits left: ${GREEN}${CREDITS}${RESET}"
+  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
+  box_mid
+  box_line "APK file ka path paste karo"
+  box_line "${DIM}Example: /sdcard/Download/app.apk${RESET}"
   box_bot
   echo
   local apk_path
-  apk_path=$(read_input " ${GREEN}>${RESET} ")
+  apk_path=$(read_input " ${GREEN}➤ APK ka path paste karo: ${RESET}")
   apk_path="${apk_path#\"}"; apk_path="${apk_path%\"}"
   apk_path="${apk_path#\'}"; apk_path="${apk_path%\'}"
   case "$apk_path" in "~/"*) apk_path="${HOME}/${apk_path#~/}" ;; esac
