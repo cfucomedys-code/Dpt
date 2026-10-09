@@ -117,30 +117,33 @@ on_interrupt(){
 }
 trap on_interrupt INT TERM
 
-# ========== ID GENERATION - MULTI-SOURCE (HAR PHONE ALAG) ==========
+# ========== ID GENERATION - TERMUX UUID (100% UNIQUE) ==========
 get_device_id(){
-  local android_id serial_id termux_uuid combined hex
+  local termux_uuid device_seed combined hex
 
-  # Source 1: Android ID (best - unique per device, works on Android 8+)
-  android_id=$(settings get secure android_id 2>/dev/null || true)
-  if [ -z "$android_id" ] || [ "$android_id" = "null" ]; then
-    android_id=""
-  fi
-
-  # Source 2: Serial (may be unknown on Android 10+)
-  serial_id=$(getprop ro.serialno 2>/dev/null || true)
-  if [ -z "$serial_id" ] || [ "$serial_id" = "unknown" ]; then
-    serial_id=""
-  fi
-
-  # Source 3: Termux UUID (fallback)
+  # Source 1: Termux UUID (100% unique per Termux installation)
   termux_uuid=$(cat /data/data/com.termux/files/usr/etc/uuid 2>/dev/null || true)
   if [ -z "$termux_uuid" ]; then
-    termux_uuid="${RANDOM}${RANDOM}${RANDOM}"
+    termux_uuid=$(cat $PREFIX/etc/uuid 2>/dev/null || true)
+  fi
+  if [ -z "$termux_uuid" ]; then
+    termux_uuid=$(cat $HOME/.termux_uuid 2>/dev/null || true)
   fi
 
-  # Combine all sources
-  combined="${android_id}|${serial_id}|${termux_uuid}|ABHIBHAI"
+  # Source 2: Android ID (extra seed)
+  device_seed=$(settings get secure android_id 2>/dev/null || true)
+  if [ -z "$device_seed" ] || [ "$device_seed" = "null" ]; then
+    device_seed=""
+  fi
+
+  # Source 3: Termux prefix path hash
+  local prefix_seed="${PREFIX:-$HOME}"
+
+  # Source 4: Random (fallback)
+  local random_seed="${RANDOM}${RANDOM}"
+
+  # Combine all
+  combined="${termux_uuid}|${device_seed}|${prefix_seed}|${random_seed}|ABHIBHAI"
 
   # Generate 6-char hex hash
   hex=$(printf '%s' "$combined" | md5sum 2>/dev/null | awk '{print $1}' | head -c 6 | tr 'a-f' 'A-F')
@@ -148,6 +151,7 @@ get_device_id(){
     hex=$(printf '%s' "$combined" | cksum | awk '{print $1}' | head -c 6)
   fi
 
+  # Agar hex already exist karta hai Firebase me toh naya banao
   printf '%s-%s\n' "$ID_PREFIX" "$hex"
 }
 
@@ -157,7 +161,31 @@ fb_patch(){ curl -fsS --connect-timeout 6 --max-time 12 -X PATCH -H "Content-Typ
 
 load_local_credits(){
   mkdir -p "$BASE"
-  DEVICE_ID=$(get_device_id)
+
+  # Agar pehle se ID saved hai, wahi use karo
+  if [ -f "$BASE/.device_id" ]; then
+    DEVICE_ID=$(cat "$BASE/.device_id")
+  else
+    DEVICE_ID=$(get_device_id)
+    # Agar Firebase me already exists hai, naya banao
+    local existing
+    existing=$(fb_get "${K_USERS}/${DEVICE_ID}")
+    if [ -n "$existing" ] && [ "$existing" != "null" ]; then
+      # ID already exists — naya banao
+      DEVICE_ID=$(get_device_id)
+      # Retry 5 times
+      local tries=0
+      while [ "$tries" -lt 5 ]; do
+        existing=$(fb_get "${K_USERS}/${DEVICE_ID}")
+        if [ -z "$existing" ] || [ "$existing" = "null" ]; then
+          break
+        fi
+        DEVICE_ID=$(get_device_id)
+        tries=$((tries+1))
+      done
+    fi
+    echo "$DEVICE_ID" > "$BASE/.device_id"
+  fi
 
   if [ ! -f "$CREDITS_FILE" ]; then
     CREDITS=$FREE_CREDITS_ON_FIRST_USE
