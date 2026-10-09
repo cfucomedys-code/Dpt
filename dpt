@@ -2,7 +2,6 @@ cat > $PREFIX/bin/dpt << 'ENDOFDPT'
 #!/data/data/com.termux/files/usr/bin/bash
 set -u
 
-# ========== FULLY ENCODED CONFIG ==========
 _A='aHR0cHM6Ly9hYmhpLWJoYWktZmE4NWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29t'
 _B='aHR0cHM6Ly90Lm1lL2FiaGlzaGVrY3JhY2s='
 _C='NTA='
@@ -118,27 +117,37 @@ on_interrupt(){
 }
 trap on_interrupt INT TERM
 
-# ========== ID GENERATE - HAR PHONE ME ALAG ==========
+# ========== ID GENERATION - MULTI-SOURCE (HAR PHONE ALAG) ==========
 get_device_id(){
-  local aid raw hex
-  aid=$(getprop ro.serialno 2>/dev/null || true)
-  if [ -z "$aid" ] || [ "$aid" = "unknown" ]; then
-    aid=$(getprop ro.boot.serialno 2>/dev/null || true)
+  local android_id serial_id termux_uuid combined hex
+
+  # Source 1: Android ID (best - unique per device, works on Android 8+)
+  android_id=$(settings get secure android_id 2>/dev/null || true)
+  if [ -z "$android_id" ] || [ "$android_id" = "null" ]; then
+    android_id=""
   fi
-  if [ -z "$aid" ]; then
-    aid=$(cat /data/data/com.termux/files/usr/etc/uuid 2>/dev/null || true)
+
+  # Source 2: Serial (may be unknown on Android 10+)
+  serial_id=$(getprop ro.serialno 2>/dev/null || true)
+  if [ -z "$serial_id" ] || [ "$serial_id" = "unknown" ]; then
+    serial_id=""
   fi
-  if [ -z "$aid" ]; then
-    aid=$(settings get secure android_id 2>/dev/null || true)
+
+  # Source 3: Termux UUID (fallback)
+  termux_uuid=$(cat /data/data/com.termux/files/usr/etc/uuid 2>/dev/null || true)
+  if [ -z "$termux_uuid" ]; then
+    termux_uuid="${RANDOM}${RANDOM}${RANDOM}"
   fi
-  if [ -z "$aid" ] || [ "$aid" = "null" ]; then
-    aid=$(cat /proc/sys/kernel/random/uuid 2>/dev/null || echo "FALLBACK-$RANDOM$RANDOM")
-  fi
-  raw="${aid}-${PREFIX:-$HOME}-ABHIBHAI"
-  hex=$(printf '%s' "$raw" | md5sum 2>/dev/null | awk '{print $1}' | head -c 6 | tr 'a-f' 'A-F')
+
+  # Combine all sources
+  combined="${android_id}|${serial_id}|${termux_uuid}|ABHIBHAI"
+
+  # Generate 6-char hex hash
+  hex=$(printf '%s' "$combined" | md5sum 2>/dev/null | awk '{print $1}' | head -c 6 | tr 'a-f' 'A-F')
   if [ -z "$hex" ]; then
-    hex=$(printf '%s' "$raw" | cksum | awk '{print $1}' | head -c 6)
+    hex=$(printf '%s' "$combined" | cksum | awk '{print $1}' | head -c 6)
   fi
+
   printf '%s-%s\n' "$ID_PREFIX" "$hex"
 }
 
@@ -146,10 +155,8 @@ fb_get(){ curl -fsS --connect-timeout 6 --max-time 12 "${FB_URL}/$1.json" 2>/dev
 fb_put(){ curl -fsS --connect-timeout 6 --max-time 12 -X PUT -H "Content-Type: application/json" -d "$2" "${FB_URL}/$1.json" >/dev/null 2>&1; }
 fb_patch(){ curl -fsS --connect-timeout 6 --max-time 12 -X PATCH -H "Content-Type: application/json" -d "$2" "${FB_URL}/$1.json" >/dev/null 2>&1; }
 
-# ========== LOCAL DATA - ID HAMESHA FRESH ==========
 load_local_credits(){
   mkdir -p "$BASE"
-  # ID hamesha device se generate - file se nahi
   DEVICE_ID=$(get_device_id)
 
   if [ ! -f "$CREDITS_FILE" ]; then
@@ -167,7 +174,6 @@ load_local_credits(){
 }
 
 save_local_credits(){
-  # ID save NAHI karte - sirf credits
   cat > "$CREDITS_FILE" <<EOF
 credits=${CREDITS}
 created=${CREATED}
