@@ -2,69 +2,27 @@ cat > $PREFIX/bin/dpt << 'ENDOFDPT'
 #!/data/data/com.termux/files/usr/bin/bash
 set -u
 
-_A='aHR0cHM6Ly9hYmhpLWJoYWktZmE4NWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29t'
-_B='aHR0cHM6Ly90Lm1lL2FiaGlzaGVrY3JhY2s='
-_C='NTA='
-_D='QEBBQkhJIEJIQEkgQ1JBQ0tFUg=='
-_E='QEBBQkhJIEJIQEk='
-_F='QEFCSEkgQkhBSQ=='
-_G='LnNyY3RtaC1kcHQ='
-_H='Y3JlZGl0cy5kYXQ='
-_I='Y29uZmln'
-_J='QUJISQ=='
-_K='QUJISSBCSEFJIERQVA=='
-_L='dXNlcnM='
-_M='Y3JlZGl0cw=='
-_N='c3RhdHVz'
-_O='ZGV2aWNlX2lk'
-_P='Y3JlYXRlZF9hdA=='
-_Q='bGFzdF9zZWVu'
-_R='YWN0aXZl'
-_S='YmFubmVk'
-_T='UHJvdGVjdCBBUEsgLyBBQUI='
-_U='Tm9ybWFsIFByb3RlY3Rpb24='
-_V='U2lnbmF0dXJlIFZlcmlmaWNhdGlvbg=='
-_W='Q29zdDogMSBjcmVkaXQ='
-_X='Q29zdDogMiBjcmVkaXRz'
-_Y='Q29zdDogMyBjcmVkaXRz'
-_Z='RW5naW5lIE1JU1NJTkc='
-_a1='UlVOVElNRSBNSVNTSU5H'
-_a3='LXZz'
+FB_URL=$(echo "aHR0cHM6Ly9hYmhpLWJoYWktZmE4NWEtZGVmYXVsdC1ydGRiLmZpcmViYXNlaW8uY29t" | base64 -d)
+ADMIN_TG=$(echo "aHR0cHM6Ly90Lm1lL2FiaGlzaGVrY3JhY2s=" | base64 -d)
+FREE_CREDITS_ON_FIRST_USE=$(echo "NTA=" | base64 -d)
+BRAND_NAME=$(echo "QEBBQkhJIEJIQEkgQ1JBQ0tFUg==" | base64 -d)
+OUTPUT_FOLDER=$(echo "QEFCSEkgQkhBSQ==" | base64 -d)
+TOOL_NAME=$(echo "QUJISSBCSEFJIERQVA==" | base64 -d)
+K_USERS=$(echo "dXNlcnM=" | base64 -d)
+K_CREDITS=$(echo "Y3JlZGl0cw==" | base64 -d)
+K_STATUS=$(echo "c3RhdHVz" | base64 -d)
+K_DEVICE=$(echo "ZGV2aWNlX2lk" | base64 -d)
+K_CREATED=$(echo "Y3JlYXRlZF9hdA==" | base64 -d)
+K_SEEN=$(echo "bGFzdF9zZWVu" | base64 -d)
+V_ACTIVE=$(echo "YWN0aXZl" | base64 -d)
+V_BANNED=$(echo "YmFubmVk" | base64 -d)
+VS_FLAG=$(echo "LXZz" | base64 -d)
 
-FB_URL=$(echo "$_A" | base64 -d 2>/dev/null)
-ADMIN_TG=$(echo "$_B" | base64 -d 2>/dev/null)
-FREE_CREDITS_ON_FIRST_USE=$(echo "$_C" | base64 -d 2>/dev/null)
-BRAND_NAME=$(echo "$_D" | base64 -d 2>/dev/null)
-ADMIN_NAME=$(echo "$_E" | base64 -d 2>/dev/null)
-OUTPUT_FOLDER=$(echo "$_F" | base64 -d 2>/dev/null)
-BASE_DIR=$(echo "$_G" | base64 -d 2>/dev/null)
-CREDITS_F=$(echo "$_H" | base64 -d 2>/dev/null)
-CONFIG_F=$(echo "$_I" | base64 -d 2>/dev/null)
-ID_PREFIX=$(echo "$_J" | base64 -d 2>/dev/null)
-TOOL_NAME=$(echo "$_K" | base64 -d 2>/dev/null)
-K_USERS=$(echo "$_L" | base64 -d 2>/dev/null)
-K_CREDITS=$(echo "$_M" | base64 -d 2>/dev/null)
-K_STATUS=$(echo "$_N" | base64 -d 2>/dev/null)
-K_DEVICE=$(echo "$_O" | base64 -d 2>/dev/null)
-K_CREATED=$(echo "$_P" | base64 -d 2>/dev/null)
-K_SEEN=$(echo "$_Q" | base64 -d 2>/dev/null)
-V_ACTIVE=$(echo "$_R" | base64 -d 2>/dev/null)
-V_BANNED=$(echo "$_S" | base64 -d 2>/dev/null)
-M_PROTECT=$(echo "$_T" | base64 -d 2>/dev/null)
-M_NORMAL=$(echo "$_U" | base64 -d 2>/dev/null)
-M_SIG=$(echo "$_V" | base64 -d 2>/dev/null)
-M_COST1=$(echo "$_W" | base64 -d 2>/dev/null)
-M_COST2=$(echo "$_X" | base64 -d 2>/dev/null)
-M_COST3=$(echo "$_Y" | base64 -d 2>/dev/null)
-M_ENG=$(echo "$_Z" | base64 -d 2>/dev/null)
-M_RT=$(echo "$_a1" | base64 -d 2>/dev/null)
-VS_FLAG=$(echo "$_a3" | base64 -d 2>/dev/null)
-
-BASE="${HOME}/${BASE_DIR}"
-CONFIG="${BASE}/${CONFIG_F}"
+BASE="${HOME}/.srctmh-dpt"
+CONFIG="${BASE}/config"
 TMP_BASE="${BASE}/tmp"
-CREDITS_FILE="${BASE}/${CREDITS_F}"
-TOOL_VERSION="3.1.0"
+CREDITS_FILE="${BASE}/credits.dat"
+ID_FILE="${BASE}/.device_id"
 
 if [ -t 1 ]; then
   BOLD=$'\033[1m'; RESET=$'\033[0m'
@@ -106,53 +64,22 @@ pause(){
   if [ -r /dev/tty ]; then read -r _ </dev/tty || true; else read -r _ || true; fi
 }
 
-on_interrupt(){
-  echo; echo
-  box_top
-  box_line "${YELLOW}Exiting safely${RESET}"
-  box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-  box_bot
-  echo
-  exit 130
-}
-trap on_interrupt INT TERM
+trap 'echo; exit 130' INT TERM
 
-# ========== ID GENERATION - TERMUX UUID (100% UNIQUE) ==========
 get_device_id(){
-  local termux_uuid device_seed combined hex
-
-  # Source 1: Termux UUID (100% unique per Termux installation)
-  termux_uuid=$(cat /data/data/com.termux/files/usr/etc/uuid 2>/dev/null || true)
-  if [ -z "$termux_uuid" ]; then
-    termux_uuid=$(cat $PREFIX/etc/uuid 2>/dev/null || true)
+  local uuid hex
+  if [ -f "$ID_FILE" ]; then
+    cat "$ID_FILE"
+    return
   fi
-  if [ -z "$termux_uuid" ]; then
-    termux_uuid=$(cat $HOME/.termux_uuid 2>/dev/null || true)
+  if [ -f /proc/sys/kernel/random/uuid ]; then
+    uuid=$(cat /proc/sys/kernel/random/uuid)
+  else
+    uuid="${RANDOM}-${RANDOM}-${RANDOM}-${RANDOM}-$(date +%s%N)"
   fi
-
-  # Source 2: Android ID (extra seed)
-  device_seed=$(settings get secure android_id 2>/dev/null || true)
-  if [ -z "$device_seed" ] || [ "$device_seed" = "null" ]; then
-    device_seed=""
-  fi
-
-  # Source 3: Termux prefix path hash
-  local prefix_seed="${PREFIX:-$HOME}"
-
-  # Source 4: Random (fallback)
-  local random_seed="${RANDOM}${RANDOM}"
-
-  # Combine all
-  combined="${termux_uuid}|${device_seed}|${prefix_seed}|${random_seed}|ABHIBHAI"
-
-  # Generate 6-char hex hash
-  hex=$(printf '%s' "$combined" | md5sum 2>/dev/null | awk '{print $1}' | head -c 6 | tr 'a-f' 'A-F')
-  if [ -z "$hex" ]; then
-    hex=$(printf '%s' "$combined" | cksum | awk '{print $1}' | head -c 6)
-  fi
-
-  # Agar hex already exist karta hai Firebase me toh naya banao
-  printf '%s-%s\n' "$ID_PREFIX" "$hex"
+  hex=$(printf '%s' "$uuid" | md5sum | awk '{print $1}' | head -c 6 | tr 'a-f' 'A-F')
+  printf 'ABHI-%s\n' "$hex" > "$ID_FILE"
+  cat "$ID_FILE"
 }
 
 fb_get(){ curl -fsS --connect-timeout 6 --max-time 12 "${FB_URL}/$1.json" 2>/dev/null || echo ""; }
@@ -161,32 +88,7 @@ fb_patch(){ curl -fsS --connect-timeout 6 --max-time 12 -X PATCH -H "Content-Typ
 
 load_local_credits(){
   mkdir -p "$BASE"
-
-  # Agar pehle se ID saved hai, wahi use karo
-  if [ -f "$BASE/.device_id" ]; then
-    DEVICE_ID=$(cat "$BASE/.device_id")
-  else
-    DEVICE_ID=$(get_device_id)
-    # Agar Firebase me already exists hai, naya banao
-    local existing
-    existing=$(fb_get "${K_USERS}/${DEVICE_ID}")
-    if [ -n "$existing" ] && [ "$existing" != "null" ]; then
-      # ID already exists — naya banao
-      DEVICE_ID=$(get_device_id)
-      # Retry 5 times
-      local tries=0
-      while [ "$tries" -lt 5 ]; do
-        existing=$(fb_get "${K_USERS}/${DEVICE_ID}")
-        if [ -z "$existing" ] || [ "$existing" = "null" ]; then
-          break
-        fi
-        DEVICE_ID=$(get_device_id)
-        tries=$((tries+1))
-      done
-    fi
-    echo "$DEVICE_ID" > "$BASE/.device_id"
-  fi
-
+  DEVICE_ID=$(get_device_id)
   if [ ! -f "$CREDITS_FILE" ]; then
     CREDITS=$FREE_CREDITS_ON_FIRST_USE
     CREATED=$(date +%s)
@@ -229,10 +131,9 @@ sync_from_firebase(){
     box_line "${RED}${BOLD}ACCESS DENIED${RESET}"
     box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
     box_mid
-    box_line "Aapka account banned hai"
-    box_line "Contact: ${CYAN}${ADMIN_TG}${RESET}"
+    box_line "Account banned"
+    box_line "${CYAN}${ADMIN_TG}${RESET}"
     box_bot
-    echo
     exit 1
   fi
   if [ -n "$user_credits" ] && [ "$user_credits" != "$CREDITS" ]; then
@@ -256,12 +157,12 @@ require_config(){
   fi
   . "$CONFIG"
   if [ -z "${DPT_JAR:-}" ] || [ ! -f "${DPT_JAR}" ]; then
-    clear_screen; box_top; box_line "${RED}${BOLD}${M_ENG}${RESET}"; box_mid
-    box_line "Re-run install.sh to repair"; box_bot; echo; exit 1
+    clear_screen; box_top; box_line "${RED}${BOLD}ENGINE MISSING${RESET}"; box_mid
+    box_line "Re-run install.sh"; box_bot; exit 1
   fi
   if [ -z "${DPT_RUNTIME:-}" ] || [ ! -d "${DPT_RUNTIME}" ]; then
-    clear_screen; box_top; box_line "${RED}${BOLD}${M_RT}${RESET}"; box_mid
-    box_line "Re-run install.sh to repair"; box_bot; echo; exit 1
+    clear_screen; box_top; box_line "${RED}${BOLD}RUNTIME MISSING${RESET}"; box_mid
+    box_line "Re-run install.sh"; box_bot; exit 1
   fi
 }
 
@@ -291,7 +192,6 @@ show_protect_progress(){
   box_top
   box_line "${BOLD}${CYAN}PROTECTING${RESET}"
   box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_mid
   box_line "${s1} File verified"
   box_line "${s2} Workspace ready"
@@ -306,16 +206,12 @@ credits_over_screen(){
   box_top
   box_line "${RED}${BOLD}CREDITS OVER${RESET}"
   box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_mid
-  box_line "Aapke credits khatam ho gaye hain"
-  box_line ""
-  box_line "Credits lene ke liye contact:"
+  box_line "Credits khatam"
   box_line "${CYAN}${ADMIN_TG}${RESET}"
   box_bot
   echo
   printf "  %sYour ID:%s %s\n" "$BOLD" "$RESET" "$DEVICE_ID"
-  printf "  %sYe ID admin ko bhejo%s\n" "$DIM" "$RESET"
   echo
   pause
 }
@@ -329,7 +225,6 @@ main_menu(){
     box_top
     box_line "${BOLD}${CYAN}⚡ ${TOOL_NAME}${RESET}"
     box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-    box_line "${BOLD}${YELLOW}ADMIN${RESET}"
     box_line "ID       ${CYAN}${DEVICE_ID}${RESET}"
     box_line "Credits  ${GREEN}${BOLD}${CREDITS}${RESET}"
     box_bot
@@ -340,17 +235,8 @@ main_menu(){
     choice=$(printf '%s' "$choice" | tr -d '[:space:]')
     case "$choice" in
       1) protect_flow ;;
-      2)
-        clear_screen
-        box_top
-        box_line "${CYAN}Thanks for using ${TOOL_NAME}${RESET}"
-        box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-        box_bot
-        echo
-        exit 0
-        ;;
-      "") ;;
-      *) printf "  %sInvalid option — choose 1-2%s\n" "$YELLOW" "$RESET" >&2; sleep 1 ;;
+      2) clear_screen; exit 0 ;;
+      *) sleep 1 ;;
     esac
   done
 }
@@ -364,79 +250,55 @@ protect_flow(){
   fi
   clear_screen
   box_top
-  box_line "${BOLD}${CYAN}${M_PROTECT}${RESET}"
-  box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
+  box_line "${BOLD}${CYAN}PROTECT APK / AAB${RESET}"
   box_mid
-  box_line "APK file ka path paste karo"
-  box_line "${DIM}Example: /sdcard/Download/app.apk${RESET}"
+  box_line "APK path paste karo"
+  box_line "${DIM}/sdcard/Download/app.apk${RESET}"
   box_bot
   echo
   local apk_path
-  apk_path=$(read_input " ${GREEN}➤ APK ka path paste karo: ${RESET}")
+  apk_path=$(read_input " ${GREEN}➤ ${RESET}")
   apk_path="${apk_path#\"}"; apk_path="${apk_path%\"}"
   apk_path="${apk_path#\'}"; apk_path="${apk_path%\'}"
-  case "$apk_path" in "~/"*) apk_path="${HOME}/${apk_path#~/}" ;; esac
-  if [ -z "$apk_path" ]; then
-    clear_screen; box_top; box_line "${RED}No path entered${RESET}"; box_bot; pause; return
-  fi
-  if [ ! -f "$apk_path" ]; then
-    clear_screen; box_top; box_line "${RED}File not found${RESET}"; box_line "$apk_path"; box_bot; pause; return
-  fi
-  case "${apk_path,,}" in
-    *.apk|*.aab) ;;
-    *) clear_screen; box_top; box_line "${RED}Only APK or AAB allowed${RESET}"; box_bot; pause; return ;;
-  esac
+  [ -z "$apk_path" ] && { clear_screen; pause; return; }
+  [ ! -f "$apk_path" ] && { clear_screen; box_top; box_line "${RED}File not found${RESET}"; box_bot; pause; return; }
+  case "${apk_path,,}" in *.apk|*.aab) ;; *) clear_screen; box_top; box_line "${RED}Only APK/AAB${RESET}"; box_bot; pause; return ;; esac
+
   clear_screen
   box_top
   box_line "${BOLD}${CYAN}SELECT PROTECTION${RESET}"
-  box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
   box_mid
-  box_line "${GREEN}[1]${RESET} ${M_NORMAL}"
-  box_line "    ${DIM}${M_COST1}${RESET}"
-  box_line ""
-  box_line "${CYAN}[2]${RESET} ${M_SIG}"
-  box_line "    ${DIM}${M_COST2}${RESET}"
-  box_line ""
-  box_line "${MAGENTA}[3]${RESET} ${BRAND_NAME} PROTECTION"
-  box_line "    ${DIM}${M_COST3}${RESET}"
+  box_line "${GREEN}[1]${RESET} Normal Protection   ${DIM}(1 credit)${RESET}"
+  box_line "${CYAN}[2]${RESET} Signature Verify    ${DIM}(2 credits)${RESET}"
+  box_line "${MAGENTA}[3]${RESET} ${BRAND_NAME} PROTECTION ${DIM}(3 credits)${RESET}"
   box_bot
   echo
   local ptype_choice ptype_label extra_flags=() cost=1
   ptype_choice=$(read_input " ${BOLD}Select:${RESET} ")
   ptype_choice=$(printf '%s' "$ptype_choice" | tr -d '[:space:]')
-  ptype_label="$M_NORMAL"
+  ptype_label="Normal Protection"
   case "$ptype_choice" in
-    2) extra_flags+=("$VS_FLAG"); ptype_label="$M_SIG"; cost=2 ;;
+    2) extra_flags+=("$VS_FLAG"); ptype_label="Signature Verification"; cost=2 ;;
     3) extra_flags+=("$VS_FLAG"); ptype_label="${BRAND_NAME} PROTECTION"; cost=3 ;;
   esac
   if [ "$CREDITS" -lt "$cost" ]; then
-    clear_screen
-    box_top
-    box_line "${YELLOW}Not enough credits${RESET}"
-    box_mid
-    box_line "Need: ${cost} credits"
-    box_line "Have: ${CREDITS} credits"
-    box_line ""
-    box_line "Contact: ${CYAN}${ADMIN_TG}${RESET}"
-    box_bot
-    pause
-    return
+    clear_screen; box_top; box_line "${YELLOW}Not enough credits${RESET}"; box_bot; pause; return
   fi
+
   local out_root="${STORAGE_ROOT:-/storage/emulated/0}/${OUTPUT_FOLDER}"
-  if ! mkdir -p "$out_root" 2>/dev/null; then
-    clear_screen; box_top; box_line "${RED}Cannot create output folder${RESET}"; box_bot; pause; return
-  fi
+  mkdir -p "$out_root" 2>/dev/null
+
   local apk_name apk_ext apk_base work_dir log_out
   apk_name=$(basename "$apk_path")
   apk_ext="${apk_name##*.}"
   apk_base="${apk_name%.*}"
   work_dir="${TMP_BASE}/protect_$$"
-  rm -rf "$work_dir"
-  mkdir -p "$work_dir"
+  rm -rf "$work_dir"; mkdir -p "$work_dir"
+
   show_protect_progress 0; sleep 0.35
   show_protect_progress 1; sleep 0.35
   show_protect_progress 2; sleep 0.25
+
   log_out="${work_dir}/run.log"
   (
     cd "$DPT_RUNTIME" || exit 90
@@ -458,51 +320,35 @@ protect_flow(){
   local status=$?
   if [ "$status" -ne 0 ]; then
     local reason
-    reason=$(tail -n 5 "$log_out" 2>/dev/null | tr '\n' ' ' | sed -E 's/[[:space:]]+/ /g' | cut -c1-34)
-    [ -z "$reason" ] && reason="Unknown error"
-    clear_screen
-    box_top
-    box_line "${RED}${BOLD}✗ PROTECTION FAILED${RESET}"
-    box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-    box_mid
-    box_line "Reason: $reason"
-    box_bot
+    reason=$(tail -n 3 "$log_out" 2>/dev/null | tr '\n' ' ' | cut -c1-30)
+    [ -z "$reason" ] && reason="Error"
+    clear_screen; box_top; box_line "${RED}FAILED${RESET}"; box_line "$reason"; box_bot
     rm -rf "$work_dir"; pause; return
   fi
   show_protect_progress 5; sleep 0.25
+
   local produced final_path
   produced=$(find "$work_dir" -type f \( -name "*_signed.apk" -o -name "*.apk" -o -name "*.aab" \) ! -name "*_unsign*" -print 2>/dev/null | head -n1)
-  if [ -z "$produced" ]; then
-    clear_screen; box_top; box_line "${RED}No output file found${RESET}"; box_bot
-    rm -rf "$work_dir"; pause; return
-  fi
+  [ -z "$produced" ] && { clear_screen; box_top; box_line "${RED}No output${RESET}"; box_bot; rm -rf "$work_dir"; pause; return; }
   final_path=$(unique_output_name "$out_root" "$apk_base" "$apk_ext")
-  if ! mv "$produced" "$final_path"; then
-    clear_screen; box_top; box_line "${RED}Could not save output${RESET}"; box_bot
-    rm -rf "$work_dir"; pause; return
-  fi
+  mv "$produced" "$final_path" || { rm -rf "$work_dir"; pause; return; }
   rm -rf "$work_dir"
+
   CREDITS=$((CREDITS-cost))
   [ "$CREDITS" -lt 0 ] && CREDITS=0
   save_local_credits
   sync_to_firebase
+
   clear_screen
   box_top
-  box_line "${GREEN}${BOLD}✓ PROTECTION COMPLETE${RESET}"
+  box_line "${GREEN}${BOLD}✓ COMPLETE${RESET}"
   box_line "${BOLD}${MAGENTA}${BRAND_NAME}${RESET}"
-  box_line "${BOLD}${YELLOW}ADMIN${RESET}"
   box_mid
   box_line "${WHITE}${apk_name}${RESET}"
   box_line "Mode: ${CYAN}${ptype_label}${RESET}"
-  box_line "Credits left: ${GREEN}${CREDITS}${RESET}"
-  box_line "Saved to:"
+  box_line "Credits: ${GREEN}${CREDITS}${RESET}"
   box_line "${DIM}${final_path}${RESET}"
   box_bot
-  if [ "$CREDITS" -le 0 ]; then
-    echo
-    printf "  %s⚠ Credits khatam%s\n" "$YELLOW" "$RESET"
-    printf "  %sContact: %s%s\n" "$DIM" "$ADMIN_TG" "$RESET"
-  fi
   pause
 }
 
