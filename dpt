@@ -118,15 +118,27 @@ on_interrupt(){
 }
 trap on_interrupt INT TERM
 
+# ========== ID GENERATE - HAR PHONE ME ALAG ==========
 get_device_id(){
   local aid raw hex
   aid=$(getprop ro.serialno 2>/dev/null || true)
-  [ -z "$aid" ] || [ "$aid" = "unknown" ] && aid=$(getprop ro.boot.serialno 2>/dev/null || true)
-  [ -z "$aid" ] && aid=$(cat /data/data/com.termux/files/usr/etc/uuid 2>/dev/null || true)
-  [ -z "$aid" ] && aid="UNKNOWN"
+  if [ -z "$aid" ] || [ "$aid" = "unknown" ]; then
+    aid=$(getprop ro.boot.serialno 2>/dev/null || true)
+  fi
+  if [ -z "$aid" ]; then
+    aid=$(cat /data/data/com.termux/files/usr/etc/uuid 2>/dev/null || true)
+  fi
+  if [ -z "$aid" ]; then
+    aid=$(settings get secure android_id 2>/dev/null || true)
+  fi
+  if [ -z "$aid" ] || [ "$aid" = "null" ]; then
+    aid=$(cat /proc/sys/kernel/random/uuid 2>/dev/null || echo "FALLBACK-$RANDOM$RANDOM")
+  fi
   raw="${aid}-${PREFIX:-$HOME}-ABHIBHAI"
   hex=$(printf '%s' "$raw" | md5sum 2>/dev/null | awk '{print $1}' | head -c 6 | tr 'a-f' 'A-F')
-  [ -z "$hex" ] && hex=$(printf '%s' "$raw" | cksum | awk '{print $1}' | head -c 6)
+  if [ -z "$hex" ]; then
+    hex=$(printf '%s' "$raw" | cksum | awk '{print $1}' | head -c 6)
+  fi
   printf '%s-%s\n' "$ID_PREFIX" "$hex"
 }
 
@@ -134,26 +146,29 @@ fb_get(){ curl -fsS --connect-timeout 6 --max-time 12 "${FB_URL}/$1.json" 2>/dev
 fb_put(){ curl -fsS --connect-timeout 6 --max-time 12 -X PUT -H "Content-Type: application/json" -d "$2" "${FB_URL}/$1.json" >/dev/null 2>&1; }
 fb_patch(){ curl -fsS --connect-timeout 6 --max-time 12 -X PATCH -H "Content-Type: application/json" -d "$2" "${FB_URL}/$1.json" >/dev/null 2>&1; }
 
+# ========== LOCAL DATA - ID HAMESHA FRESH ==========
 load_local_credits(){
   mkdir -p "$BASE"
+  # ID hamesha device se generate - file se nahi
+  DEVICE_ID=$(get_device_id)
+
   if [ ! -f "$CREDITS_FILE" ]; then
-    DEVICE_ID=$(get_device_id)
     CREDITS=$FREE_CREDITS_ON_FIRST_USE
     CREATED=$(date +%s)
     REGISTERED=0
     save_local_credits
+  else
+    . "$CREDITS_FILE"
+    CREDITS="${credits:-0}"
+    CREATED="${created:-$(date +%s)}"
+    REGISTERED="${registered:-0}"
   fi
-  . "$CREDITS_FILE"
-  DEVICE_ID="${device_id:-$(get_device_id)}"
-  CREDITS="${credits:-0}"
-  CREATED="${created:-$(date +%s)}"
-  REGISTERED="${registered:-0}"
   case "$CREDITS" in (*[!0-9]*|"") CREDITS=0 ;; esac
 }
 
 save_local_credits(){
+  # ID save NAHI karte - sirf credits
   cat > "$CREDITS_FILE" <<EOF
-device_id=${DEVICE_ID}
 credits=${CREDITS}
 created=${CREATED}
 registered=${REGISTERED:-0}
