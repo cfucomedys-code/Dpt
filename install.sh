@@ -59,7 +59,7 @@ ensure_pkg(){
 
 clear 2>/dev/null || true
 box_top
-box_line "${BOLD}${CYAN}SRC TMH DPT INSTALLER${RESET}"
+box_line "${BOLD}${CYAN}ABHI BHAI DPT INSTALLER${RESET}"
 box_line "${BOLD}${MAGENTA}@ABHI BHAI CRACKER${RESET}"
 box_line "${BOLD}${YELLOW}ADMIN${RESET}"
 box_line "Version ${TOOL_VERSION}"
